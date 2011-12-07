@@ -18,6 +18,12 @@ re_remote = re.compile(r'^(https?|ftp):\/\/')
 re_whitespace = re.compile(r'\s{2,}')
 re_ext = re.compile(r'\.([a-zA-Z]{2,4})$')
 
+jpegoptim = None
+try:
+    jpegoptim = helpers.execute('which','jpegoptim').strip()
+except:
+    pass
+
 
 class MediaFile(object):
     """
@@ -123,6 +129,8 @@ class MediaFile(object):
             args = '"%s" %s "%s"' % (self.path, options, dest.path)
             helpers.execute(settings.CONVERT_PATH, args)
             dest._write_metadata({'source': self.name, 'relation': [options]})
+            if jpegoptim and dest.path.endswith('.jpg'):
+                helpers.execute(jpegoptim, '--strip-all {}'.format(dest.path))
         return dest
 
 
