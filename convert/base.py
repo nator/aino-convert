@@ -19,8 +19,13 @@ re_whitespace = re.compile(r'\s{2,}')
 re_ext = re.compile(r'\.([a-zA-Z]{2,4})$')
 
 jpegoptim = None
+optipng = None
 try:
     jpegoptim = helpers.execute('which','jpegoptim').strip()
+except:
+    pass
+try:
+    optipng = helpers.execute('which','optipng').strip()
 except:
     pass
 
@@ -131,6 +136,8 @@ class MediaFile(object):
             dest._write_metadata({'source': self.name, 'relation': [options]})
             if jpegoptim and dest.path.endswith('.jpg'):
                 helpers.execute(jpegoptim, '--strip-all {}'.format(dest.path))
+            if optipng and dest.path.endswith('.png'):
+                helpers.execute(optipng, '--quiet {}'.format(dest.path))
         return dest
 
 
